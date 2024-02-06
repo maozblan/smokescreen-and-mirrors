@@ -5,10 +5,30 @@ class Menu extends Phaser.Scene {
 
     preload() {
         // them sprites and audio
+        this.load.image('ground', './assets/img/ground.png')
+        this.load.spritesheet('playerMain', './assets/img/playerMain.png', {
+            frameWidth: 50,
+            frameHeight: 35,
+            startFrame: 0,
+            endFrame: 2
+        })
+    }
+
+    init() {
+        // set game settings
+        game.settings = {
+            scrollSpeed: 3
+        }
     }
 
     create() {
         // set up animations
+        this.anims.create({
+            key: 'playerMain-run',
+            frames: this.anims.generateFrameNumbers('playerMain', {start: 0, end: 0}),
+            frameRate: 30,
+        })
+
         this.add.text(0, 0, 'meow')
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
     }
