@@ -2,6 +2,8 @@ class Platform extends Phaser.GameObjects.TileSprite {
     constructor(scene, posX, posY, sizeX, sizeY, texture, player) {
         super(scene, posX, posY, sizeX, sizeY, texture)
 
+        this.setOrigin(0, 0)
+
         // save for later
         this.size = sizeX
 
@@ -24,6 +26,13 @@ class Platform extends Phaser.GameObjects.TileSprite {
 
     offScreen() {
         if (this.x + this.size < 0) {
+            return true
+        }
+        return false
+    }
+
+    completelyOnScreen() {
+        if (this.x === game.config.width-this.sizeX) {
             return true
         }
         return false

@@ -28,7 +28,11 @@ class Menu extends Phaser.Scene {
         game.settings = {
             scrollSpeed: 5, // in pixels
             bulletDelay: 1.5, // in seconds
-            bulletSpeed: 1000, // velocity
+            bulletSpeed: 1300, // velocity
+            // random generation thresholds
+            bulletThreshold: 0.007,
+            spikeThreshold: 0.005,
+            platformThreshold: 0.04,
         }
     }
 

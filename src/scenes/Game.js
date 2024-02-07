@@ -5,6 +5,7 @@ class Game extends Phaser.Scene {
         // some variables
         this.platforms = [] // array of platforms in mirror world
         this.spikes = [] // array of spikes in mirror world
+        this.bullets = [] // array of bullets in real world
         this.gameEnd = false
     }
 
@@ -53,6 +54,15 @@ class Game extends Phaser.Scene {
             }
         });
 
+        // update bullets
+        this.bullets.forEach(bullet => {
+            bullet.update()
+            if (bullet.offScreen()) { 
+                bullet.destroy()
+                this.bullets.splice(this.bullets.indexOf(bullet), 1)
+            }
+        });
+
         // for testing
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.generateBullet()
@@ -61,14 +71,23 @@ class Game extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
             this.generateMirrorPlatform()
         }
+        if (this.bullets.length < 2 && Math.random() < game.settings.bulletThreshold) {
+            this.generateBullet()
+        }
+        if (this.spikes.length < 3 && Math.random() < game.settings.spikeThreshold) {
+            this.generateSpikes()
+        }
+        if ((this.platforms.length === 0  || this.platforms[this.platforms.length-1].completelyOnScreen()) && Math.random() < game.settings.platformThreshold) {
+            this.generateMirrorPlatform()
+        }
     }
 
     generateBullet() {
-        new Bullet(this, game.config.width, game.config.height-75, 'bullet', this.playerMain)
+        this.bullets.push(new Bullet(this, game.config.width, game.config.height-(parseInt(Math.random() * (300-50) + 50)), 'bullet', this.playerMain))
     }
 
     generateMirrorPlatform() {
-        this.platforms.push(new Platform(this, game.config.width, game.config.height-150, 150, 30, 'ground', this.playerMirror))
+        this.platforms.push(new Platform(this, game.config.width+55, game.config.height-150, parseInt(Math.random()*(550-350)+350), 30, 'ground', this.playerMirror))
     }
 
     generateSpikes() {

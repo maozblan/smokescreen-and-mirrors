@@ -1,7 +1,6 @@
 class Bullet extends Phaser.GameObjects.Sprite {
     constructor (scene, x, y, texture, player, frame=0) {
         super(scene, x, y, texture, frame)
-        console.log('made bullet');
 
         // save variables for other use
         this.scene = scene
@@ -9,7 +8,6 @@ class Bullet extends Phaser.GameObjects.Sprite {
         
         // make the line first
         this.line = this.scene.add.rectangle(0, y, game.config.width, 10, 0xFF0000, 1).setOrigin(0, 0.5)
-        console.log(this.line.alpha);
 
         // fade the line
         this.scene.tweens.add({
@@ -29,7 +27,6 @@ class Bullet extends Phaser.GameObjects.Sprite {
     }
 
     shoot() {
-        console.log('pew')
         // add the actual bullet into the scene
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
@@ -41,5 +38,12 @@ class Bullet extends Phaser.GameObjects.Sprite {
 
         // shoot the bullet
         this.body.setVelocityX(-game.settings.bulletSpeed)
+    }
+
+    offScreen() {
+        if (this.x + this.width < 0) {
+            return true
+        }
+        return false
     }
 }

@@ -9,6 +9,8 @@ class Player extends Phaser.GameObjects.Sprite {
     jump() {
         if (this.body.onFloor()) {
             this.body.setVelocityY(-600)
+        } else {
+            this.body.setVelocityY(900)
         }
     }
 }

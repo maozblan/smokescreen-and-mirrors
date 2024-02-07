@@ -1,7 +1,7 @@
 /**
  * Lyssa Li
  * Project Name: Smokescreen & Mirrors
- * Project Hours: approx 7
+ * Project Hours: approx 15
  * Creative Tilt Justification:
  * Citations:
  *      platforming example and code referenced from https://gamedevacademy.org/how-to-make-a-mario-style-platformer-with-phaser-3/?a=13
@@ -28,3 +28,7 @@ let game = new Phaser.Game(config)
 
 // keybinds
 let keySPACE, keyLEFT, keyRIGHT
+
+// implment scores
+// save scores to local storage
+// tutorial page
