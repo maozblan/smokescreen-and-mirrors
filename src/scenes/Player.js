@@ -13,7 +13,7 @@ class Player extends Phaser.GameObjects.Sprite {
     update() {
         if (Phaser.Input.Keyboard.JustDown(keySPACE) && this.body.onFloor()) {
             // jump physics
-            this.body.setVelocityY(-400)
+            this.body.setVelocityY(-600)
         }
     }
 }

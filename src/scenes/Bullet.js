@@ -1,25 +1,25 @@
 class Bullet extends Phaser.GameObjects.Sprite {
-    constructor (scene, x, y, texture, frame=0) {
+    constructor (scene, x, y, texture, player, frame=0) {
         super(scene, x, y, texture, frame)
         console.log('made bullet');
 
-        // save the scene
+        // save variables for other use
         this.scene = scene
+        this.player = player
         
         // make the line first
-        this.line = this.scene.add.rectangle(0, y, game.config.width, 10, 0xFF0000, 10).setOrigin(0, 0.5)
+        this.line = this.scene.add.rectangle(0, y, game.config.width, 10, 0xFF0000, 1).setOrigin(0, 0.5)
         console.log(this.line.alpha);
 
         // fade the line
-        const loopCount = 10
-        this.scene.time.addEvent({
-            delay: game.settings.bulletDelay * (1000 / loopCount),
-            repeat: loopCount,
-            callback: () => { console.log('alpha', this.line.alpha); this.line.setAlpha(this.line.alpha-0.1) },
-            callbackScope: this,
+        this.scene.tweens.add({
+            targets: this.line,
+            duration: game.settings.bulletDelay*1000-50, // bullets shoot right after
+            alpha: { from: 1, to: 0 },
+            repeat: 0,
         })
 
-        // timer
+        // timer to shoot bullet
         this.scene.time.addEvent({
             delay: game.settings.bulletDelay * 1000,    // 1 second = 1000 milliseconds
             startAt: 0,
@@ -34,11 +34,17 @@ class Bullet extends Phaser.GameObjects.Sprite {
         this.scene.physics.add.existing(this)
         this.scene.add.existing(this)
 
-        // create a collidable bullet
+        // set up physics
         this.body.setImmovable(true)
         this.body.setAllowGravity(false)
+        this.scene.physics.add.collider(this.player, this, this.playerHit, null, this)
 
         // shoot the bullet
         this.body.setVelocityX(-game.settings.bulletSpeed)
+    }
+
+    playerHit() {
+        console.log('player hit :(')
+        this.scene.gameOver()
     }
 }

@@ -1,10 +1,11 @@
 /**
  * Lyssa Li
  * Project Name: Smokescreen & Mirrors
- * Project Hours: approx 5
+ * Project Hours: approx 6
  * Creative Tilt Justification:
  * Citations:
  *      platforming example and code referenced from https://gamedevacademy.org/how-to-make-a-mario-style-platformer-with-phaser-3/?a=13
+ *      tweening and fading referenced from https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/Play.js
  */
 
 let config = {
@@ -17,7 +18,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 500 },
+            gravity: { y: 1000 },
             debug: true,
         }
     },
@@ -26,4 +27,4 @@ let config = {
 let game = new Phaser.Game(config)
 
 // keybinds
-let keySPACE, keyLEFT
+let keySPACE, keyLEFT, keyRIGHT

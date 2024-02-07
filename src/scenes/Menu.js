@@ -7,6 +7,7 @@ class Menu extends Phaser.Scene {
         // them sprites and audio
         this.load.image('ground', './assets/img/ground.png')
         this.load.image('bullet', './assets/img/bullet.png')
+        this.load.image('mirrorPlatform', './assets/img/mirrorPlatform.png') // will be a nineslice
         this.load.spritesheet('playerMain', './assets/img/playerMain.png', {
             frameWidth: 50,
             frameHeight: 35,
@@ -19,8 +20,8 @@ class Menu extends Phaser.Scene {
         // set game settings
         game.settings = {
             scrollSpeed: 3, // in pixels
-            bulletDelay: 3, // in seconds
-            bulletSpeed: 900, // velocity
+            bulletDelay: 1.5, // in seconds
+            bulletSpeed: 1000, // velocity
         }
     }
 

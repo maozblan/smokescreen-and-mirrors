@@ -1,6 +1,10 @@
 class Game extends Phaser.Scene {
     constructor() {
         super('gameScene')
+
+        // some variables
+        this.platforms = [] // array of platforms in mirror world
+        this.gameEnd = false
     }
 
     create() {
@@ -18,14 +22,30 @@ class Game extends Phaser.Scene {
         // keybinds
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
+        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
     }
 
     update() {
         // update instances
         this.playerMain.update()
+        
+        // update background
+        this.platforms.forEach(platform => {
+            platform.x -= game.settings.scrollSpeed
+        });
+
+        // for testing
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             console.log('try to make bullet')
-            new Bullet(this, game.config.width, game.config.height-100, 'bullet')
+            new Bullet(this, game.config.width, game.config.height-100, 'bullet', this.playerMain)
         }
+        if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
+            this.generateMirrorPlatform()
+        }
+    }
+
+    gameOver() {
+        this.gameEnd = true
+        console.log('game over!')
     }
 }
