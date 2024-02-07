@@ -4,15 +4,10 @@ class Player extends Phaser.GameObjects.Sprite {
 
         scene.physics.add.existing(this)
         scene.add.existing(this)
-
-        // state
-        this.state = 'run'
-        // TODO state machine
     }
 
-    update() {
-        if (Phaser.Input.Keyboard.JustDown(keySPACE) && this.body.onFloor()) {
-            // jump physics
+    jump() {
+        if (this.body.onFloor()) {
             this.body.setVelocityY(-600)
         }
     }

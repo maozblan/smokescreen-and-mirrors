@@ -1,17 +1,32 @@
-class Platform extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture) {
-        super(scene, x, y, texture)
+class Platform extends Phaser.GameObjects.TileSprite {
+    constructor(scene, posX, posY, sizeX, sizeY, texture, player) {
+        super(scene, posX, posY, sizeX, sizeY, texture)
 
+        // save for later
+        this.size = sizeX
+
+        // set up physics
         scene.physics.add.existing(this)
         this.body.setImmovable(true)
         this.body.setAllowGravity(false)
         scene.add.existing(this)
 
-        // some stats?
+        if (player) {
+            this.body.checkCollision.down = false
+            this.body.checkCollision.left = false
+            scene.physics.add.collider(player, this)
+        }
     }
 
     update() {
-        this.tilePositionX -= game.settings.scrollSpeed;
+        this.x -= game.settings.scrollSpeed
+    }
+
+    offScreen() {
+        if (this.x + this.size < 0) {
+            return true
+        }
+        return false
     }
 }
 
