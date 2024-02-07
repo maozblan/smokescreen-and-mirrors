@@ -6,6 +6,7 @@ class Menu extends Phaser.Scene {
     preload() {
         // them sprites and audio
         this.load.image('ground', './assets/img/ground.png')
+        this.load.image('bullet', './assets/img/bullet.png')
         this.load.spritesheet('playerMain', './assets/img/playerMain.png', {
             frameWidth: 50,
             frameHeight: 35,
@@ -17,7 +18,9 @@ class Menu extends Phaser.Scene {
     init() {
         // set game settings
         game.settings = {
-            scrollSpeed: 3
+            scrollSpeed: 3, // in pixels
+            bulletDelay: 3, // in seconds
+            bulletSpeed: 900, // velocity
         }
     }
 

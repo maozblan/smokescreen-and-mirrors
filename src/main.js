@@ -26,4 +26,4 @@ let config = {
 let game = new Phaser.Game(config)
 
 // keybinds
-let keySPACE
+let keySPACE, keyLEFT
