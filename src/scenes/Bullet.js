@@ -37,14 +37,9 @@ class Bullet extends Phaser.GameObjects.Sprite {
         // set up physics
         this.body.setImmovable(true)
         this.body.setAllowGravity(false)
-        this.scene.physics.add.collider(this.player, this, this.playerHit, null, this)
+        this.scene.physics.add.collider(this.player, this, this.scene.gameOver, null, this)
 
         // shoot the bullet
         this.body.setVelocityX(-game.settings.bulletSpeed)
-    }
-
-    playerHit() {
-        console.log('player hit :(')
-        this.scene.gameOver()
     }
 }

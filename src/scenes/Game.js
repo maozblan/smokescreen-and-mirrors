@@ -4,6 +4,7 @@ class Game extends Phaser.Scene {
 
         // some variables
         this.platforms = [] // array of platforms in mirror world
+        this.spikes = [] // array of spikes in mirror world
         this.gameEnd = false
     }
 
@@ -43,10 +44,19 @@ class Game extends Phaser.Scene {
             }
         });
 
+        // update spikes
+        this.spikes.forEach(spike => {
+            spike.update()
+            if (spike.offScreen()) { 
+                spike.destroy()
+                this.spikes.splice(this.spikes.indexOf(spike), 1)
+            }
+        });
+
         // for testing
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            console.log('try to make bullet')
             this.generateBullet()
+            // this.generateSpikes()
         }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
             this.generateMirrorPlatform()
@@ -59,6 +69,10 @@ class Game extends Phaser.Scene {
 
     generateMirrorPlatform() {
         this.platforms.push(new Platform(this, game.config.width, game.config.height-150, 150, 30, 'ground', this.playerMirror))
+    }
+
+    generateSpikes() {
+        this.spikes.push(new Spike(this, game.config.width, game.config.height-50, 'spike', this.playerMirror))
     }
 
     gameOver() {
