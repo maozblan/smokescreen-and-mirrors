@@ -27,7 +27,7 @@ let config = {
 let game = new Phaser.Game(config)
 
 // keybinds
-let keySPACE, keyLEFT, keyRIGHT
+let keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN
 
 // implment scores
 // save scores to local storage

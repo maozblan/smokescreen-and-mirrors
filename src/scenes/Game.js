@@ -24,6 +24,22 @@ class Game extends Phaser.Scene {
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
+
+        // delay timer
+        this.time.addEvent({
+            delay: 1000,
+            repeat: Math.max(game.settings.bulletDelayTimer, game.settings.spikeDelayTimer, game.settings.platformDelayTimer),
+            callback: this.updateTimers,
+            callbackScope: this,
+        })
+
+        // difficulty increase every 15 seconds
+        this.time.addEvent({
+            delay: 15 * 1000,
+            loop: true,
+            callback: this.increaseDifficulty,
+            callbackScope: this,
+        })
     }
 
     update() {
@@ -44,7 +60,6 @@ class Game extends Phaser.Scene {
                 this.platforms.splice(this.platforms.indexOf(platform), 1)
             }
         });
-
         // update spikes
         this.spikes.forEach(spike => {
             spike.update()
@@ -53,7 +68,6 @@ class Game extends Phaser.Scene {
                 this.spikes.splice(this.spikes.indexOf(spike), 1)
             }
         });
-
         // update bullets
         this.bullets.forEach(bullet => {
             bullet.update()
@@ -63,27 +77,26 @@ class Game extends Phaser.Scene {
             }
         });
 
-        // for testing
-        if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            this.generateBullet()
-            // this.generateSpikes()
-        }
-        if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
-            this.generateMirrorPlatform()
-        }
-        if (this.bullets.length < 2 && Math.random() < game.settings.bulletThreshold) {
+        // random generation
+        if (!game.settings.bulletDelayTimer &&
+            this.bullets.length < game.settings.bulletMaxCount &&
+            Math.random() < game.settings.bulletThreshold) {
             this.generateBullet()
         }
-        if (this.spikes.length < 3 && Math.random() < game.settings.spikeThreshold) {
+        if (!game.settings.spikeDelayTimer &&
+            this.spikes.length < game.settings.spikeMaxCount &&
+            Math.random() < game.settings.spikeThreshold) {
             this.generateSpikes()
         }
-        if ((this.platforms.length === 0  || this.platforms[this.platforms.length-1].completelyOnScreen()) && Math.random() < game.settings.platformThreshold) {
+        if (!game.settings.platformDelayTimer &&
+            (this.platforms.length === 0  || this.platforms[this.platforms.length-1].completelyOnScreen()) &&
+            Math.random() < game.settings.platformThreshold) {
             this.generateMirrorPlatform()
         }
     }
 
     generateBullet() {
-        this.bullets.push(new Bullet(this, game.config.width, game.config.height-(parseInt(Math.random() * (300-50) + 50)), 'bullet', this.playerMain))
+        this.bullets.push(new Bullet(this, game.config.width, game.config.height-(parseInt(Math.random() * (275-50) + 50)), 'bullet', this.playerMain))
     }
 
     generateMirrorPlatform() {
@@ -97,5 +110,30 @@ class Game extends Phaser.Scene {
     gameOver() {
         this.gameEnd = true
         console.log('game over!')
+    }
+
+    updateTimers() {
+        if (game.settings.bulletDelayTimer) {
+            game.settings.bulletDelayTimer--
+        }
+        if (game.settings.spikeDelayTimer) {
+            game.settings.spikeDelayTimer--
+        }
+        if (game.settings.platformDelayTimer) {
+            game.settings.platformDelayTimer--
+        }
+    }
+
+    counter = 1
+    increaseDifficulty() { // set timer event to call every 15 seconds
+        game.settings.bulletThreshold += 0.001
+        game.settings.spikeThreshold += 0.0005
+        game.settings.platformThreshold += 0.004
+        if (this.counter % 8 == 0) { // every 120 seconds major increase to difficulty
+            game.settings.spikeMaxCount++
+        }
+        if (this.counter++ % 4 == 0) { // every 60 seconds minor increase to difficulty
+            game.settings.bulletMaxCount++
+        }
     }
 }
