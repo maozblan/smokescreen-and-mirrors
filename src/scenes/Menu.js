@@ -13,6 +13,9 @@ class Menu extends Phaser.Scene {
         this.currentScene;
         this.currentTutorialIndex;
         this.tutorial = [
+            "Press SPACE to jump and fall. Cats in the air will fall, cats on the ground will jump.",
+            "Bullets are denoted by fading red lines and will fire on delay, Normal Cat will be killed by the bullets. Mirror Cat is immune to bullets.",
+            "Mirror Cat can land on the platforms and can get killed by the spikes. Normal Cat cannot land on the platforms.",
         ]
     }
 
@@ -34,6 +37,9 @@ class Menu extends Phaser.Scene {
             startFrame: 0,
             endFrame: 2
         })
+
+        // tutorial images
+        this.load.image('tutorial', './assets/tutorial.png');
     }
 
     init() {
@@ -130,7 +136,13 @@ class Menu extends Phaser.Scene {
     }
 
     tutorialPrev() {
+        if (this.currentTutorialIndex > 0) {
+            this.currentTutorialIndex--
+        }
     }
     tutorialNext() {
+        if (this.currentTutorialIndex < this.tutorial.length) {
+            this.currentTutorialIndex++
+        }
     }
 }
