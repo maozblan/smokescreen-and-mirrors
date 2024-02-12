@@ -25,17 +25,17 @@ class Menu extends Phaser.Scene {
         this.load.image('bullet', './assets/img/bullet.png')
         this.load.image('spike', './assets/img/spike.png')
         this.load.image('mirrorPlatform', './assets/img/mirrorPlatform.png')
-        this.load.spritesheet('playerMain', './assets/img/playerMain.png', {
+        this.load.spritesheet('player', './assets/img/spritesheets/player-Sheet.png', {
             frameWidth: 50,
             frameHeight: 35,
             startFrame: 0,
-            endFrame: 2
+            endFrame: 7
         })
         this.load.spritesheet('playerMirror', './assets/img/playerMirror.png', {
             frameWidth: 50,
             frameHeight: 35,
             startFrame: 0,
-            endFrame: 2
+            endFrame: 7
         })
 
         // tutorial images
@@ -69,9 +69,25 @@ class Menu extends Phaser.Scene {
     create() {
         // set up animations
         this.anims.create({
-            key: 'playerMain-run',
-            frames: this.anims.generateFrameNumbers('playerMain', {start: 0, end: 0}),
-            frameRate: 30,
+            key: 'player-run',
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 5}),
+            frameRate: 15,
+        })
+        this.anims.create({
+            key: 'player-jumpMax',
+            frames: this.anims.generateFrameNumbers('player', {frames: [5, 0, 1]}),
+            frameRate: 15,
+        })
+        this.anims.create({
+            key: 'player-jump',
+            frames: this.anims.generateFrameNumbers('player', {frames: [6]}),
+            frameRate: 0,
+        })
+        this.anims.create({
+            key: 'player-fall',
+            frames: this.anims.generateFrameNumbers('player', {frames: [7]}),
+            frameRate: 0,
         })
 
         this.add.text(0, 0, 'meow')

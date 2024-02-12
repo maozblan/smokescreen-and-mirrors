@@ -13,8 +13,8 @@ class Game extends Phaser.Scene {
         this.add.text(0, 0, 'meow meow meow')
 
         // create player
-        this.playerMain = new Player(this, 100, game.config.height-75, 'playerMain', 0).setOrigin(0.5, 1)
-        this.playerMirror = new Player(this, 105, game.config.height-75, 'playerMirror', 0).setOrigin(0.5, 1)
+        this.playerMirror = new Player(this, 105, 0, 'playerMirror', 0).setOrigin(0.5, 1)
+        this.playerMain = new Player(this, 100, 0, 'player', 0).setOrigin(0.5, 1)
 
         // set up scene
         this.bg_ground = new Platform(this, -10, game.config.height, game.config.width+25, 50, 'ground', this.playerMain).setOrigin(0, 1)
@@ -48,6 +48,9 @@ class Game extends Phaser.Scene {
             this.playerMain.jump()
             this.playerMirror.jump()
         }
+        // player update
+        this.playerMain.update()
+        this.playerMirror.update()
 
         // scroll background
         this.bg_ground.tilePositionX -= game.settings.scrollSpeed

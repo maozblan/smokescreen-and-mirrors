@@ -7,7 +7,7 @@ class Bullet extends Phaser.GameObjects.Sprite {
         this.player = player
         
         // make the line first
-        this.line = this.scene.add.rectangle(0, y, game.config.width, 10, 0xFF0000, 1).setOrigin(0, 0.5)
+        this.line = this.scene.add.rectangle(0, y, game.config.width, 5, 0xFF0000, 1).setOrigin(0, 0.5)
 
         // fade the line
         this.scene.tweens.add({
