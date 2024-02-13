@@ -10,14 +10,15 @@ class Game extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(0, 0, 'meow meow meow')
-
         // create player
         this.playerMirror = new Player(this, 105, 0, 'playerMirror', 0).setOrigin(0.5, 1)
         this.playerMain = new Player(this, 100, 0, 'player', 0).setOrigin(0.5, 1)
 
         // set up scene
         this.bg_ground = new Platform(this, -10, game.config.height, game.config.width+25, 50, 'ground', this.playerMain).setOrigin(0, 1)
+        this.bg_mirror = this.add.tileSprite(0, 0, 700, 360, 'backgroundMirror').setOrigin(0).setDepth(-5)
+
+        // add extra colliders
         this.physics.add.collider(this.bg_ground, this.playerMirror)
 
         // keybinds
@@ -40,6 +41,8 @@ class Game extends Phaser.Scene {
             callback: this.increaseDifficulty,
             callbackScope: this,
         })
+
+        this.add.text(0, 0, 'meow meow meow')
     }
 
     update() {
@@ -53,7 +56,8 @@ class Game extends Phaser.Scene {
         this.playerMirror.update()
 
         // scroll background
-        this.bg_ground.tilePositionX -= game.settings.scrollSpeed
+        this.bg_ground.tilePositionX += game.settings.scrollSpeed
+        this.bg_mirror.tilePositionX += game.settings.scrollSpeed
         
         // update platforms
         this.platforms.forEach(platform => {
@@ -88,6 +92,7 @@ class Game extends Phaser.Scene {
         }
         if (!game.settings.spikeDelayTimer &&
             this.spikes.length < game.settings.spikeMaxCount &&
+            (this.spikes.length === 0 || this.spikes[this.spikes.length-1].completelyOnScreen()) &&
             Math.random() < game.settings.spikeThreshold) {
             this.generateSpikes()
         }
@@ -99,7 +104,7 @@ class Game extends Phaser.Scene {
     }
 
     generateBullet() {
-        this.bullets.push(new Bullet(this, game.config.width, game.config.height-(parseInt(Math.random() * (275-50) + 50)), 'bullet', this.playerMain))
+        this.bullets.push(new Bullet(this, game.config.width, game.config.height-(parseInt(Math.random() * (275-50) + 50)), 'bullet', this.playerMain).setScale(1.5).setDepth(5))
     }
 
     generateMirrorPlatform() {
@@ -107,7 +112,7 @@ class Game extends Phaser.Scene {
     }
 
     generateSpikes() {
-        this.spikes.push(new Spike(this, game.config.width, game.config.height-50, 'spike', this.playerMirror))
+        this.spikes.push(new Spike(this, game.config.width, game.config.height-50, 'spike', this.playerMirror).setOrigin(0, 1).setDepth(-5))
     }
 
     gameOver() {
@@ -132,7 +137,7 @@ class Game extends Phaser.Scene {
         game.settings.bulletThreshold += 0.001
         game.settings.spikeThreshold += 0.0005
         game.settings.platformThreshold += 0.004
-        if (this.counter % 8 == 0) { // every 120 seconds major increase to difficulty
+        if (this.counter % 8 == 0) { // every 120 seconds minor increase to difficulty
             game.settings.spikeMaxCount++
         }
         if (this.counter++ % 4 == 0) { // every 60 seconds minor increase to difficulty

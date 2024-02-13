@@ -16,7 +16,7 @@ class Player extends Phaser.GameObjects.Sprite {
         }
     }
 
-    update() {
+    update() {  // animations
         // if body not on ground
             // check if there needs to be a change from jump to fall
             // if velocityY > 0, play falling animation
@@ -34,7 +34,6 @@ class Player extends Phaser.GameObjects.Sprite {
             } else if (this.body.velocity.y > threshold) {
                 this.anims.play(`${this.texture.key}-fall`, true)
             } else {
-                console.log('jumpmax')
                 this.anims.play(`${this.texture.key}-jumpMax`)
             }
         }

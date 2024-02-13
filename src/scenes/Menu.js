@@ -14,14 +14,15 @@ class Menu extends Phaser.Scene {
         this.currentTutorialIndex;
         this.tutorial = [
             "Press SPACE to jump and fall. Cats in the air will fall, cats on the ground will jump.",
-            "Bullets are denoted by fading red lines and will fire on delay, Normal Cat will be killed by the bullets. Mirror Cat is immune to bullets.",
-            "Mirror Cat can land on the platforms and can get killed by the spikes. Normal Cat cannot land on the platforms.",
+            "Bullets are denoted by fading red lines and will fire on delay",
+            "Normal Cat will be killed by the bullets. Mirror Cat is immune to bullets.\n Mirror Cat can land on the platforms and can get killed by the spikes. Normal Cat cannot land on the platforms.",
         ]
     }
 
     preload() {
         // them sprites and audio
         this.load.image('ground', './assets/img/ground.png')
+        this.load.image('backgroundMirror', './assets/img/bgMirror.png')
         this.load.image('bullet', './assets/img/bullet.png')
         this.load.image('spike', './assets/img/spike.png')
         this.load.image('mirrorPlatform', './assets/img/mirrorPlatform.png')
@@ -38,8 +39,10 @@ class Menu extends Phaser.Scene {
             endFrame: 7
         })
 
-        // tutorial images
-        this.load.image('tutorial', './assets/tutorial.png');
+        // menu setup
+        this.load.image('menuBG', './assets/img/menuBackground.png')
+        this.load.image('tutorialBG', './assets/img/tutorialBackground.png')
+        this.load.image('tutorial', './assets/img/tutorial-Sheet.png');
     }
 
     init() {
@@ -57,13 +60,19 @@ class Menu extends Phaser.Scene {
             spikeMaxCount: 2,
             // delay timers in seconds
             bulletDelayTimer: 2,
-            spikeDelayTimer: 25,
+            spikeDelayTimer: 15,
             platformDelayTimer: 2,
         }
 
         // set variables that need to be reset every time Menu plays
         this.currentScene = SCENES.MENU
         this.currentTutorialIndex = 0
+
+        // reset camera and state
+        this.cameras.main.centerOn(game.config.width/2, game.config.height/2)
+        this.startMenu()
+        // reset tutorial
+        this.tutorial.tilePositionX = 0
     }
 
     create() {
@@ -90,8 +99,19 @@ class Menu extends Phaser.Scene {
             frameRate: 0,
         })
 
-        this.add.text(0, 0, 'meow')
-        this.startMenu()
+        // set up scene
+        this.add.image(0, 0, 'menuBG').setOrigin(0)
+        this.add.image(0, game.config.height, 'tutorialBG').setOrigin(0)
+        this.add.image(0, -game.config.height, 'creditsBG').setOrigin(0)
+        new Platform(this, -10, game.config.height, game.config.width+25, 50, 'ground').setOrigin(0, 1)
+
+        // set up tutorial
+        this.tutorial = this.add.tileSprite(150, game.config.height+50, 450, 200, 'tutorial', 0).setOrigin(0).setDepth(-5)
+        this.add.text(60, game.config.height*2-40, 'T U T O R I A L').setFontSize(30).setRotation(-Math.PI/2)
+        this.tutorialText = this.add.text(375, game.config.height*2-58, this.tutorial[0]).setOrigin(0.5)
+
+        // set up camera
+        this.cameras.main.setBounds(0, -game.config.height, game.config.width, game.config.height*3, true)
 
         // keybinds
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
@@ -138,16 +158,20 @@ class Menu extends Phaser.Scene {
 
     startMenu() {
         // scroll camera
+        this.cameras.main.pan(game.config.width/2, game.config.height/2, 500)
         this.currentScene = SCENES.MENU
     }
 
     startCredits() {
+        console.log('e')
         // scroll camera
+        this.cameras.main.pan(game.config.width/2, -game.config.height/2, 500)
         this.currentScene = SCENES.CREDITS
     }
 
     startTutorial() {
         // scroll camera
+        this.cameras.main.pan(game.config.width/2, game.config.height*3/2, 500)
         this.currentScene = SCENES.TUTORIAL
     }
 

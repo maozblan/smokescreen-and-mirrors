@@ -21,4 +21,11 @@ class Spike extends Phaser.GameObjects.Sprite {
         }
         return false
     }
+
+    completelyOnScreen() {
+        if (this.x === game.config.width-this.sizeX) {
+            return true
+        }
+        return false
+    }
 }
