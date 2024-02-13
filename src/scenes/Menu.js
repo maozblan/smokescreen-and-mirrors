@@ -1,21 +1,14 @@
-// enum
-const SCENES = Object.freeze({
-    CREDITS: 0,
-    MENU: 1,
-    TUTORIAL: 2,
-})
-
 class Menu extends Phaser.Scene {
     constructor() {
         super('menuScene')
 
         // some variables
-        this.currentScene;
-        this.currentTutorialIndex;
-        this.tutorial = [
-            "Press SPACE to jump and fall. Cats in the air will fall, cats on the ground will jump.",
-            "Bullets are denoted by fading red lines and will fire on delay",
-            "Normal Cat will be killed by the bullets. Mirror Cat is immune to bullets.\n Mirror Cat can land on the platforms and can get killed by the spikes. Normal Cat cannot land on the platforms.",
+        this.currentYLoc = game.config.height/2; // keep track of screen scroll
+        this.currentTutorialIndex = 0;
+        this.tutorialArr = [
+            "Press SPACE to jump and fall.\nCats in the air will fall, cats on the ground will jump.",
+            "Bullets are denoted by fading red lines\nand will fire on delay",
+            "Normal Cat will be killed by the bullets.\nMirror Cat is immune to bullets.\nMirror Cat can land on the platforms\nand can get killed by the spikes.\nNormal Cat cannot land on the platforms.",
         ]
     }
 
@@ -42,37 +35,8 @@ class Menu extends Phaser.Scene {
         // menu setup
         this.load.image('menuBG', './assets/img/menuBackground.png')
         this.load.image('tutorialBG', './assets/img/tutorialBackground.png')
-        this.load.image('tutorial', './assets/img/tutorial-Sheet.png');
-    }
-
-    init() {
-        // set game settings
-        game.settings = {
-            scrollSpeed: 5, // in pixels
-            bulletDelay: 1.5, // in seconds
-            bulletSpeed: 1500, // velocity
-            // random generation thresholds
-            bulletThreshold: 0.009,
-            spikeThreshold: 0.005,
-            platformThreshold: 0.05,
-            // max count for pooling
-            bulletMaxCount: 2,
-            spikeMaxCount: 2,
-            // delay timers in seconds
-            bulletDelayTimer: 2,
-            spikeDelayTimer: 15,
-            platformDelayTimer: 2,
-        }
-
-        // set variables that need to be reset every time Menu plays
-        this.currentScene = SCENES.MENU
-        this.currentTutorialIndex = 0
-
-        // reset camera and state
-        this.cameras.main.centerOn(game.config.width/2, game.config.height/2)
-        this.startMenu()
-        // reset tutorial
-        this.tutorial.tilePositionX = 0
+        this.load.image('tutorial', './assets/img/tutorial-Sheet.png')
+        this.load.image('dot', './assets/img/tutorialDot.png')
     }
 
     create() {
@@ -108,7 +72,8 @@ class Menu extends Phaser.Scene {
         // set up tutorial
         this.tutorial = this.add.tileSprite(150, game.config.height+50, 450, 200, 'tutorial', 0).setOrigin(0).setDepth(-5)
         this.add.text(60, game.config.height*2-40, 'T U T O R I A L').setFontSize(30).setRotation(-Math.PI/2)
-        this.tutorialText = this.add.text(375, game.config.height*2-58, this.tutorial[0]).setOrigin(0.5)
+        this.tutorialText = this.add.text(375, game.config.height*2-58, this.tutorialArr[0]).setFontSize(12).setAlign('center').setOrigin(0.5)
+        this.tutorialMarker = this.add.image(355, game.config.height*2-100, 'dot')
 
         // set up camera
         this.cameras.main.setBounds(0, -game.config.height, game.config.width, game.config.height*3, true)
@@ -121,68 +86,77 @@ class Menu extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
     }
 
-    update() {
-        switch(this.currentScene) {
-            case SCENES.MENU:
-                // start game
-                if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-                    this.scene.start('gameScene')
-                }
-                // credits
-                if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-                    this.startCredits()
-                }
-                // tutorial
-                if (Phaser.Input.Keyboard.JustDown(keyDOWN)) {
-                    this.startTutorial()
-                }
-                break
-            case SCENES.CREDITS:
-                if (Phaser.Input.Keyboard.JustDown(keyDOWN)) {
-                    this.startMenu()
-                }
-                break
-            case SCENES.TUTORIAL:
-                if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-                    this.startMenu()
-                }
-                if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-                    this.tutorialPrev()
-                }
-                if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
-                    this.tutorialNext()
-                }
-                break
+    init() {
+        // set game settings
+        game.settings = {
+            scrollSpeed: 5, // in pixels
+            bulletDelay: 1.5, // in seconds
+            bulletSpeed: 1500, // velocity
+            // random generation thresholds
+            bulletThreshold: 0.009,
+            spikeThreshold: 0.005,
+            platformThreshold: 0.05,
+            // max count for pooling
+            bulletMaxCount: 2,
+            spikeMaxCount: 2,
+            // delay timers in seconds
+            bulletDelayTimer: 2,
+            spikeDelayTimer: 15,
+            platformDelayTimer: 2,
+        }
+
+        // set variables that need to be reset every time Menu plays
+        this.currentYLoc = game.config.height/2;
+        this.currentTutorialIndex = 0
+
+        // reset camera and state
+        this.cameras.main.centerOn(game.config.width/2, game.config.height/2)
+        // reset tutorial
+        if (this.tutorial) {
+            this.updateTutorial()
         }
     }
 
-    startMenu() {
-        // scroll camera
-        this.cameras.main.pan(game.config.width/2, game.config.height/2, 500)
-        this.currentScene = SCENES.MENU
+    update() {
+        // scrolling
+        if (Phaser.Input.Keyboard.JustDown(keyUP)) {
+            this.currentYLoc -= game.config.height
+            this.cameras.main.pan(game.config.width/2, this.currentYLoc, 500)
+        }
+        if (Phaser.Input.Keyboard.JustDown(keyDOWN)) {
+            this.currentYLoc += game.config.height
+            this.cameras.main.pan(game.config.width/2, this.currentYLoc, 500)
+        }
+        // start on SPACE when on menu
+        if (Phaser.Input.Keyboard.JustDown(keySPACE) && this.currentYLoc === game.config.height/2) {
+            this.scene.start('gameScene')
+        }
+        // go through tutorial when on tutorial
+        if (Phaser.Input.Keyboard.JustDown(keyLEFT) && this.currentYLoc === game.config.height*3/2) {
+            this.tutorialPrev()
+        }
+        if (Phaser.Input.Keyboard.JustDown(keyRIGHT) && this.currentYLoc === game.config.height*3/2) {
+            this.tutorialNext()
+        }
     }
 
-    startCredits() {
-        console.log('e')
-        // scroll camera
-        this.cameras.main.pan(game.config.width/2, -game.config.height/2, 500)
-        this.currentScene = SCENES.CREDITS
+    // scrolling tutorial panel
+    updateTutorial() {
+        this.tutorial.tilePositionX = this.currentTutorialIndex*450
+        this.tutorialText.text = this.tutorialArr[this.currentTutorialIndex]
+        // update the dot
+        this.tutorialMarker.x = 355 + 20*this.currentTutorialIndex
     }
-
-    startTutorial() {
-        // scroll camera
-        this.cameras.main.pan(game.config.width/2, game.config.height*3/2, 500)
-        this.currentScene = SCENES.TUTORIAL
-    }
-
     tutorialPrev() {
         if (this.currentTutorialIndex > 0) {
             this.currentTutorialIndex--
         }
+        this.updateTutorial()
     }
     tutorialNext() {
-        if (this.currentTutorialIndex < this.tutorial.length) {
+        if (this.currentTutorialIndex < this.tutorialArr.length-1) {
             this.currentTutorialIndex++
         }
+        this.updateTutorial()
     }
 }
