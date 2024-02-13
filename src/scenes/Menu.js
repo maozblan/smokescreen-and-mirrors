@@ -15,7 +15,8 @@ class Menu extends Phaser.Scene {
     preload() {
         // them sprites and audio
         this.load.image('ground', './assets/img/ground.png')
-        this.load.image('backgroundMirror', './assets/img/bgMirror.png')
+        this.load.image('mirrorGround', './assets/img/mirrorGround.png')
+        this.load.image('backgroundMirror', './assets/img/background.png')
         this.load.image('bullet', './assets/img/bullet.png')
         this.load.image('spike', './assets/img/spike.png')
         this.load.image('mirrorPlatform', './assets/img/mirrorPlatform.png')
@@ -25,7 +26,7 @@ class Menu extends Phaser.Scene {
             startFrame: 0,
             endFrame: 7
         })
-        this.load.spritesheet('playerMirror', './assets/img/playerMirror.png', {
+        this.load.spritesheet('playerMirror', './assets/img/spritesheets/playerMirror-Sheet.png', {
             frameWidth: 50,
             frameHeight: 35,
             startFrame: 0,
@@ -41,39 +42,45 @@ class Menu extends Phaser.Scene {
 
     create() {
         // set up animations
-        this.anims.create({
-            key: 'player-run',
-            repeat: -1,
-            frames: this.anims.generateFrameNumbers('player', {start: 0, end: 5}),
-            frameRate: 15,
-        })
-        this.anims.create({
-            key: 'player-jumpMax',
-            frames: this.anims.generateFrameNumbers('player', {frames: [5, 0, 1]}),
-            frameRate: 15,
-        })
-        this.anims.create({
-            key: 'player-jump',
-            frames: this.anims.generateFrameNumbers('player', {frames: [6]}),
-            frameRate: 0,
-        })
-        this.anims.create({
-            key: 'player-fall',
-            frames: this.anims.generateFrameNumbers('player', {frames: [7]}),
-            frameRate: 0,
+        ['player', 'playerMirror'].forEach((item) => {
+            this.anims.create({
+                key: `${item}-run`,
+                repeat: -1,
+                frames: this.anims.generateFrameNumbers(item, {start: 0, end: 5}),
+                frameRate: 15,
+            })
+            this.anims.create({
+                key: `${item}-jumpMax`,
+                frames: this.anims.generateFrameNumbers(item, {frames: [5, 0, 1]}),
+                frameRate: 15,
+            })
+            this.anims.create({
+                key: `${item}-jump`,
+                frames: this.anims.generateFrameNumbers(item, {frames: [6]}),
+                frameRate: 0,
+            })
+            this.anims.create({
+                key: `${item}-fall`,
+                frames: this.anims.generateFrameNumbers(item, {frames: [7]}),
+                frameRate: 0,
+            })
         })
 
         // set up scene
         this.add.image(0, 0, 'menuBG').setOrigin(0)
         this.add.image(0, game.config.height, 'tutorialBG').setOrigin(0)
-        this.add.image(0, -game.config.height, 'creditsBG').setOrigin(0)
         new Platform(this, -10, game.config.height, game.config.width+25, 50, 'ground').setOrigin(0, 1)
+        this.add.tileSprite(0, -game.config.height, 700, 720, 'backgroundMirror').setOrigin(0).setDepth(-5) // includes tutorial bg
+        this.add.text(game.config.width/2, game.config.height-90, 'UP ARROW for Credits\nDOWN ARROW for Tutorial\nSPACE to Start').setAlign('center').setOrigin(0.5)
 
         // set up tutorial
         this.tutorial = this.add.tileSprite(150, game.config.height+50, 450, 200, 'tutorial', 0).setOrigin(0).setDepth(-5)
         this.add.text(60, game.config.height*2-40, 'T U T O R I A L').setFontSize(30).setRotation(-Math.PI/2)
         this.tutorialText = this.add.text(375, game.config.height*2-58, this.tutorialArr[0]).setFontSize(12).setAlign('center').setOrigin(0.5)
         this.tutorialMarker = this.add.image(355, game.config.height*2-100, 'dot')
+
+        // set up credits
+        this.add.text(game.config.width/2, -game.config.height+50, 'C R E D I T S').setFontSize(30).setOrigin(0.5)
 
         // set up camera
         this.cameras.main.setBounds(0, -game.config.height, game.config.width, game.config.height*3, true)
@@ -118,14 +125,20 @@ class Menu extends Phaser.Scene {
     }
 
     update() {
+        const scrollSpeed = 450 // in milliseconds
         // scrolling
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-            this.currentYLoc -= game.config.height
-            this.cameras.main.pan(game.config.width/2, this.currentYLoc, 500)
+            console.log(this.currentYLoc)
+            if (this.currentYLoc >= game.config.height/2) {
+                this.currentYLoc -= game.config.height
+                this.cameras.main.pan(game.config.width/2, this.currentYLoc, scrollSpeed)
+            }
         }
         if (Phaser.Input.Keyboard.JustDown(keyDOWN)) {
-            this.currentYLoc += game.config.height
-            this.cameras.main.pan(game.config.width/2, this.currentYLoc, 500)
+            if (this.currentYLoc <= game.config.height/2) {
+                this.currentYLoc += game.config.height
+                this.cameras.main.pan(game.config.width/2, this.currentYLoc, scrollSpeed)
+            }
         }
         // start on SPACE when on menu
         if (Phaser.Input.Keyboard.JustDown(keySPACE) && this.currentYLoc === game.config.height/2) {
