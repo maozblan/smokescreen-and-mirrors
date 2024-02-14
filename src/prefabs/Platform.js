@@ -38,5 +38,3 @@ class Platform extends Phaser.GameObjects.TileSprite {
         return false
     }
 }
-
-// prefab for generation, not the prefab copy that is in the scene

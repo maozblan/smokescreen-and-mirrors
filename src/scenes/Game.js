@@ -8,6 +8,14 @@ class Game extends Phaser.Scene {
         this.bullets = [] // array of bullets in real world
         this.gameEnd = false
         this.runScore = 0
+        this.runTime = 0
+        this.highScore = localStorage.getItem('smokescreenAndMirrors_highScore')
+        if (this.highScore === null) {
+            // create object
+            this.highScore = 0
+        } else {
+            this.highScore = JSON.parse(this.highScore)
+        }
     }
 
     create() {
@@ -33,10 +41,14 @@ class Game extends Phaser.Scene {
 
         // create game over screen
         this.gameOverScreen = this.add.image(game.config.width/2, game.config.height/2, 'gameOver').setOrigin(0.5).setDepth(10)
-        this.runScoreT = this.add.text(166+16, 214+16, '0').setOrigin(0.5).setFontSize(20).setAlign('center').setDepth(11)
+        this.runScoreT = this.add.text(166+16, 217+16, '0').setOrigin(0.5).setFontSize(16).setAlign('center').setDepth(11)
         this.highScoreT = this.add.text(game.config.width-(166+16), 214+16, '0').setOrigin(0.5).setFontSize(20).setAlign('center').setDepth(11)
         this.newHighScoreT = this.add.text(game.config.width/2, 256+16, 'NEW HIGH SCORE!').setFontSize(20).setOrigin(0.5).setAlign('center').setDepth(11)
         this.restartGuideT = this.add.text(game.config.width/2, game.config.height-60, 'M to return to menu   ENTER to play again').setOrigin(0.5).setAlign('center').setDepth(11)
+
+        // HUD
+        this.runScoreHUD = this.add.text(10, 10, `CURRENT SCORE: 0`)
+        this.runTimeHUD = this.add.text(game.config.width-10, 10, `00:00`).setOrigin(1, 0)
 
         // hide on start
         this.hideGameOver()
@@ -58,6 +70,18 @@ class Game extends Phaser.Scene {
             delay: 15 * 1000,
             loop: true,
             callback: this.increaseDifficulty,
+            callbackScope: this,
+        })
+
+        // timer
+        this.time.addEvent({
+            delay: 1000,
+            loop: true,
+            callback: () => { 
+                if (!this.gameEnd) {
+                    this.runTime++; this.updateTimerText()
+                }
+            },
             callbackScope: this,
         })
     }
@@ -98,6 +122,7 @@ class Game extends Phaser.Scene {
                 this.endScene()
                 this.scene.start('menuScene')
             }
+            // using ENTER instead of SPACE in case of spamming
             if (Phaser.Input.Keyboard.JustDown(keyENTER)) {
                 this.endScene()
                 this.scene.restart()
@@ -105,14 +130,13 @@ class Game extends Phaser.Scene {
         }
     }
 
+    // generate obstacles
     generateBullet() {
         this.bullets.push(new Bullet(this, game.config.width, game.config.height-(parseInt(Math.random() * (275-50) + 50)), 'bullet', this.playerMain).setScale(1.5).setDepth(5))
     }
-
     generateMirrorPlatform() {
         this.platforms.push(new Platform(this, game.config.width+55, game.config.height-150, parseInt(Math.random()*(550-350)+350), 30, 'mirrorGround', this.playerMirror))
     }
-
     generateSpikes() {
         this.spikes.push(new Spike(this, game.config.width, game.config.height-50, 'spike', this.playerMirror).setOrigin(0, 1).setDepth(-5))
     }
@@ -142,6 +166,14 @@ class Game extends Phaser.Scene {
         }
     }
 
+    updateScores(score) {
+        this.runScore += score
+        this.runScoreHUD.text = `CURRENT SCORE: ${this.runScore}`
+    }
+    updateTimerText() {
+        this.runTimeHUD.text = `${parseInt(this.runTime/60).toString().padStart(2, '0')}:${(this.runTime%60).toString().padStart(2, '0')}`
+    }
+
     updateBackground() {
         // scroll background
         this.bg_ground.tilePositionX += game.settings.scrollSpeed
@@ -161,7 +193,7 @@ class Game extends Phaser.Scene {
             if (spike.offScreen()) { 
                 spike.destroy()
                 this.spikes.splice(this.spikes.indexOf(spike), 1)
-                this.runScore += game.settings.spikeScore
+                this.updateScores(game.settings.spikeScore)
             }
         });
         // update bullets
@@ -170,11 +202,12 @@ class Game extends Phaser.Scene {
             if (bullet.offScreen()) { 
                 bullet.destroy()
                 this.bullets.splice(this.bullets.indexOf(bullet), 1)
-                this.runScore += game.settings.bulletScore
+                this.updateScores(game.settings.bulletScore)
             }
         });
     }
 
+    // game over screen and state handling
     gameOver() {
         this.gameEnd = true
         // pause animations
@@ -183,8 +216,10 @@ class Game extends Phaser.Scene {
         // game over screen
         const b = this.updateGameOver()
         this.showGameOver(b)
+        // hide HUD
+        this.runTimeHUD.visible = false
+        this.runScoreHUD.visible = false
     }
-
     hideGameOver() {
         [this.gameOverScreen, this.runScoreT, this.highScoreT, this.newHighScoreT, this.restartGuideT].forEach(item => {
             item.visible = false
@@ -197,11 +232,18 @@ class Game extends Phaser.Scene {
         if (highScore) {
             this.newHighScoreT.visible = true
         }
+        // update highscore
+        this.highScoreT.text = this.highScore
     }
     // returns if there is new high score T/F
     updateGameOver() {
-        this.runScoreT.text = this.runScore
+        this.finalTime = this.runTime
+        this.runScoreT.text = `${this.runScore} in ${parseInt(this.finalTime/60).toString().padStart(2, '0')}:${(this.finalTime%60).toString().padStart(2, '0')}`
         if (this.runScore > this.highScore) {
+            // update highscore and save it
+            this.highScore = this.runScore
+            localStorage.setItem('smokescreenAndMirrors_highScore', JSON.stringify(this.highScore))
+            return true
         }
         return false
     }
@@ -209,6 +251,8 @@ class Game extends Phaser.Scene {
     // reset scene variables
     endScene() {
         this.hideGameOver()
+        
+        // reset player
         this.playerMain.x = 100
         this.playerMain.y = 0
         this.playerMain.body.setVelocity(0)
@@ -224,5 +268,22 @@ class Game extends Phaser.Scene {
         game.settings.platformThreshold = 0.05
         game.settings.bulletMaxCount = 3
         game.settings.spikeMaxCount = 1
+        game.settings.bulletDelayTimer = 4
+        game.settings.spikeDelayTimer = 2
+        game.settings.platformDelayTimer = 2
+
+        // reset scores
+        this.updateScores(-this.runScore)
+        this.runTime = 0
+
+        // clear old data
+        this.spikes = []
+        this.platforms = []
+        this.bullets = []
+        this.bg_mirror.tilePositionX = 0
+
+        // show HUD
+        this.runTimeHUD.visible = true
+        this.runScoreHUD.visible = true
     }
 }
