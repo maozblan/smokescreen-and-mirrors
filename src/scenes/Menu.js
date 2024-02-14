@@ -111,7 +111,7 @@ class Menu extends Phaser.Scene {
 
         // set up UI audio
         this.doopSFX = this.sound.add('doopSFX')
-        this.doopVolume = 0.1
+        this.doopVolume = 0.25
 
         // keybinds
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)

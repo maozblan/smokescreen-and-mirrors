@@ -274,8 +274,6 @@ class Game extends Phaser.Scene {
 
     // reset scene variables
     endScene() {
-        this.hideGameOver()
-        
         // reset player
         this.playerMain.x = 100
         this.playerMain.y = 0
@@ -312,5 +310,7 @@ class Game extends Phaser.Scene {
         // show HUD
         this.runTimeHUD.visible = true
         this.runScoreHUD.visible = true
+
+        this.hideGameOver()
     }
 }
