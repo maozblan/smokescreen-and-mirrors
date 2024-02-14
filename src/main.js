@@ -9,6 +9,7 @@
  *      animation technique to get the running smooth https://phaser.discourse.group/t/start-animation-at-a-specific-frame/9763
  *      animation framing and picking frames https://phaser.discourse.group/t/capture-current-frame-number-of-animation-and/2723
  *      camera panning and timer done with the help of chatGPT https://chat.openai.com/share/6fc570b0-81a1-4f91-beae-39c64d2ae72c
+ *      royalty-free cat sounds from pixabay https://pixabay.com/sound-effects/search/cat/ just keeping the link here for future projects maybe
  */
 
 let config = {

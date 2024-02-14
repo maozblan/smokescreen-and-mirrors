@@ -6,6 +6,9 @@ class Player extends Phaser.GameObjects.Sprite {
 
         scene.physics.add.existing(this)
         scene.add.existing(this)
+
+        // audio
+        this.jumpSFX = scene.sound.add('jumpSFX')
     }
 
     jump() {
@@ -14,6 +17,10 @@ class Player extends Phaser.GameObjects.Sprite {
         } else {
             this.body.setVelocityY(900)
         }
+        // sound
+        this.jumpSFX.play()
+        this.jumpSFX.setSeek(0.2)
+        this.jumpSFX.setVolume(0.03)
     }
 
     update() {  // animations

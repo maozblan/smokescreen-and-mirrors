@@ -16,10 +16,25 @@ class Game extends Phaser.Scene {
         } else {
             this.highScore = JSON.parse(this.highScore)
         }
+        
+        // for audio
+        this.bg_music_dirty = false
+        this.blehSFX_dirty = false
     }
 
     create() {
-        console.log('create')
+        // play music
+        if (!this.bg_music_dirty) {
+            this.bg_music = this.sound.add('bgMusic')
+            this.bg_music.setLoop(true)
+            this.bg_music.play()
+            this.bg_music_dirty = true
+        }
+        this.bg_music.setVolume(0.1)
+        
+        // create audio
+        this.blehSFX = this.sound.add('blehSFX')
+
         // create player
         this.playerMirror = new Player(this, 95, 0, 'playerMirror', 0).setOrigin(0.5, 1)
         this.playerMain = new Player(this, 100, 0, 'player', 0).setOrigin(0.5, 1)
@@ -55,8 +70,6 @@ class Game extends Phaser.Scene {
     }
 
     init() {
-        console.log('init')
-
         // delay timer
         this.time.addEvent({
             delay: 1000,
@@ -120,6 +133,9 @@ class Game extends Phaser.Scene {
             // handle game over events
             if (Phaser.Input.Keyboard.JustDown(keyM)) {
                 this.endScene()
+                // dim background music for menu
+                this.bg_music.setVolume(0.03)
+
                 this.scene.start('menuScene')
             }
             // using ENTER instead of SPACE in case of spamming
@@ -173,7 +189,6 @@ class Game extends Phaser.Scene {
     updateTimerText() {
         this.runTimeHUD.text = `${parseInt(this.runTime/60).toString().padStart(2, '0')}:${(this.runTime%60).toString().padStart(2, '0')}`
     }
-
     updateBackground() {
         // scroll background
         this.bg_ground.tilePositionX += game.settings.scrollSpeed
@@ -209,6 +224,7 @@ class Game extends Phaser.Scene {
 
     // game over screen and state handling
     gameOver() {
+        // change dirty
         this.gameEnd = true
         // pause animations
         this.playerMain.anims.pause()
@@ -219,6 +235,14 @@ class Game extends Phaser.Scene {
         // hide HUD
         this.runTimeHUD.visible = false
         this.runScoreHUD.visible = false
+        // play bleh sound
+        if (!this.blehSFX_dirty) {
+            this.blehSFX.play()
+            this.blehSFX.setLoop(false)
+            this.blehSFX.setSeek(0.45)
+            this.blehSFX.setVolume(0.1)
+            this.blehSFX_dirty = true
+        }
     }
     hideGameOver() {
         [this.gameOverScreen, this.runScoreT, this.highScoreT, this.newHighScoreT, this.restartGuideT].forEach(item => {
@@ -262,6 +286,7 @@ class Game extends Phaser.Scene {
 
         // reset data
         this.gameEnd = false
+        this.blehSFX_dirty = false
         this.runScore = 0
         game.settings.bulletThreshold = 0.009
         game.settings.spikeThreshold = 0.005
@@ -280,6 +305,8 @@ class Game extends Phaser.Scene {
         this.spikes = []
         this.platforms = []
         this.bullets = []
+
+        // reset background
         this.bg_mirror.tilePositionX = 0
 
         // show HUD

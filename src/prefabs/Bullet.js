@@ -24,6 +24,9 @@ class Bullet extends Phaser.GameObjects.Sprite {
             callback: this.shoot,
             callbackScope: this,
         })
+
+        // pew pew audio
+        this.pewSFX = scene.sound.add('pewSFX')
     }
 
     shoot() {
@@ -38,6 +41,10 @@ class Bullet extends Phaser.GameObjects.Sprite {
 
         // shoot the bullet
         this.body.setVelocityX(-game.settings.bulletSpeed)
+
+        // play the sound
+        this.pewSFX.play()
+        this.pewSFX.setVolume(0.3)
     }
 
     offScreen() {
