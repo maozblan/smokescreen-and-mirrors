@@ -136,7 +136,7 @@ class Menu extends Phaser.Scene {
             spikeMaxCount: 1,
             // delay timers in seconds
             bulletDelayTimer: 4,
-            spikeDelayTimer: 2,
+            spikeDelayTimer: 1,
             platformDelayTimer: 2,
             // scores for dodging various objects
             bulletScore: 10,
