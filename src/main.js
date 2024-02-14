@@ -7,6 +7,7 @@
  *      platforming example and code referenced from https://gamedevacademy.org/how-to-make-a-mario-style-platformer-with-phaser-3/?a=13
  *      tweening and fading referenced from https://github.com/nathanaltice/PaddleParkourP3/blob/master/src/scenes/Play.js
  *      animation technique to get the running smooth https://phaser.discourse.group/t/start-animation-at-a-specific-frame/9763
+ *      animation framing and picking frames https://phaser.discourse.group/t/capture-current-frame-number-of-animation-and/2723
  */
 
 let config = {
@@ -28,8 +29,7 @@ let config = {
 let game = new Phaser.Game(config)
 
 // keybinds
-let keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN
+let keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyM, keyENTER
 
 // implment scores
 // save scores to local storage
-// tutorial page

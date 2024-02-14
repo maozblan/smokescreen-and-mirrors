@@ -6,7 +6,7 @@ class Menu extends Phaser.Scene {
         this.currentYLoc = game.config.height/2; // keep track of screen scroll
         this.currentTutorialIndex = 0;
         this.tutorialArr = [
-            "Press SPACE to jump and fall.\nCats in the air will fall, cats on the ground will jump.",
+            "Press SPACE to jump and fall for both cats.\nCats in the air will fall, cats on the ground will jump.",
             "Bullets are denoted by fading red lines\nand will fire on delay",
             "Normal Cat will be killed by the bullets.\nMirror Cat is immune to bullets.\nMirror Cat can land on the platforms\nand can get killed by the spikes.\nNormal Cat cannot land on the platforms.",
         ]
@@ -19,7 +19,6 @@ class Menu extends Phaser.Scene {
         this.load.image('backgroundMirror', './assets/img/background.png')
         this.load.image('bullet', './assets/img/bullet.png')
         this.load.image('spike', './assets/img/spike.png')
-        this.load.image('mirrorPlatform', './assets/img/mirrorPlatform.png')
         this.load.spritesheet('player', './assets/img/spritesheets/player-Sheet.png', {
             frameWidth: 50,
             frameHeight: 35,
@@ -32,6 +31,7 @@ class Menu extends Phaser.Scene {
             startFrame: 0,
             endFrame: 7
         })
+        this.load.image('gameOver', './assets/img/gameOver.png')
 
         // menu setup
         this.load.image('menuBG', './assets/img/menuBackground.png')
@@ -104,12 +104,15 @@ class Menu extends Phaser.Scene {
             spikeThreshold: 0.005,
             platformThreshold: 0.05,
             // max count for pooling
-            bulletMaxCount: 2,
-            spikeMaxCount: 2,
+            bulletMaxCount: 3,
+            spikeMaxCount: 1,
             // delay timers in seconds
             bulletDelayTimer: 2,
-            spikeDelayTimer: 15,
+            spikeDelayTimer: 5,
             platformDelayTimer: 2,
+            // scores for dodging various objects
+            bulletScore: 10,
+            spikeScore: 5
         }
 
         // set variables that need to be reset every time Menu plays
@@ -128,7 +131,6 @@ class Menu extends Phaser.Scene {
         const scrollSpeed = 450 // in milliseconds
         // scrolling
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
-            console.log(this.currentYLoc)
             if (this.currentYLoc >= game.config.height/2) {
                 this.currentYLoc -= game.config.height
                 this.cameras.main.pan(game.config.width/2, this.currentYLoc, scrollSpeed)

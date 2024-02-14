@@ -8,7 +8,7 @@ class Spike extends Phaser.GameObjects.Sprite {
         this.body.setImmovable(true)
         scene.add.existing(this)
 
-        scene.physics.add.collider(player, this, scene.gameOver, null, this)
+        scene.physics.add.collider(player, this, scene.gameOver, null, this.scene)
     }
 
     update() {
